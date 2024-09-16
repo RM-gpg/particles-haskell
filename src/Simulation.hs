@@ -2,20 +2,19 @@ module Simulation where
 
 import Types
 import Control.Monad.Tardis
-import Graphics.Gloss.Data.Color
 
 {- Advances the particles by the specified time. -}
 advanceWorld :: Float -> Float -> Float -> [Particle] -> [Particle]
 advanceWorld eWall eParticle t ps = advanceWorld' t ps 0
 	where
-	advanceWorld' 0 ps _ = map zeroVel (adjustOverlapping eParticle ps [])
-	advanceWorld' _ ps 100 = map zeroVel (adjustOverlapping eParticle ps [])
+	advanceWorld' 0 ps _ = adjustOverlapping eParticle (map zeroVel ps) []
+	advanceWorld' t ps 100 = adjustOverlapping eParticle (map (moveParticle t . zeroVel) ps) []
 	advanceWorld' t ps n = advanceWorld' (t-bw) (map zeroVel ps') (n+1)
 		where
 			(ps',(bw,_)) = runTardis (adjustParticles eWall eParticle ps) (t,(t,0))
 
 
-{- Sets the x,y velocities of a particle to 0 if it is below a threshold. -}
+{- Sets the x,y velocities of a particle to 0 if they are below a threshold. -}
 zeroVel :: Particle -> Particle
 zeroVel p@(Particle _ _ _ (vx,vy) _) = p {velocity = (if abs vx < 0.01 then 0 else vx, if abs vy < 0.01 then 0 else vy)}
 
@@ -44,10 +43,10 @@ overlapping e p1@(Particle _ r1 (px1,py1) (vx1,vy1) _) p2@(Particle _ r2 (px2,py
                 phi = helper (px1-x) (py1-y)
 		theta = helper (vx2-vx1) (vy2-vy1) - phi
 		phi' = phi+pi
-		px1' = limiter (100-r1) (px1 + sin phi * ((r1-sqrt ((x-px1)^2+(y-py1)^2))))
-		py1' = limiter (100-r1) (py1 + cos phi * ((r1-sqrt ((x-px1)^2+(y-py1)^2))))
-		px2' = limiter (100-r2) (px2 + sin phi' * ((r2-sqrt ((x-px2)^2+(y-py2)^2))))
-		py2' = limiter (100-r2) (py2 + cos phi' * ((r2-sqrt ((x-px2)^2+(y-py2)^2))))
+		px1' = limiter (100-r1) (px1 + sin phi * (r1-sqrt ((x-px1)^2+(y-py1)^2)))
+		py1' = limiter (100-r1) (py1 + cos phi * (r1-sqrt ((x-px1)^2+(y-py1)^2)))
+		px2' = limiter (100-r2) (px2 + sin phi' * (r2-sqrt ((x-px2)^2+(y-py2)^2)))
+		py2' = limiter (100-r2) (py2 + cos phi' * (r2-sqrt ((x-px2)^2+(y-py2)^2)))
 
 
 {- Computes the next state following the immediate collision of one or two particles if there
@@ -71,11 +70,12 @@ adjustParticles eWall eParticle (x:xs) = do
 replace :: Float -> Particle -> [Particle] -> Tardis Float (Float,Int) [Particle]
 replace _ p [] = do
 	(t,n) <- getPast
-	pure $ if n == 0 then [moveParticle t p] else []
-replace e p (x:xs) = case (collisionTime p x) of
+	pure [moveParticle t p | n == 0]
+replace e p (x:xs) = case collisionTime p x of
 	Nothing -> do
 		bw <- getFuture
-		(moveParticle bw x:) <$> replace e p xs
+		(t,_) <- getPast
+		(moveParticle (min bw t) x:) <$> replace e p xs
 	Just ctime -> do
 		bw <- getFuture
 		(t,n) <- getPast
