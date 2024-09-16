@@ -6,22 +6,14 @@ cabal-version: 2.2
 
 name:           particles
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/particles#readme>
-homepage:       https://github.com/githubuser/particles#readme
-bug-reports:    https://github.com/githubuser/particles/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2024 Author name here
+author:         Robert Mascarenhas
+maintainer:     robwmascarenhas@gmail.com
+copyright:      2024 Robert Mascarenhas
 license:        BSD-3-Clause
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
-    CHANGELOG.md
-
-source-repository head
-  type: git
-  location: https://github.com/githubuser/particles
 
 library
   exposed-modules:
@@ -36,7 +28,7 @@ library
       src
   default-extensions:
       LambdaCase
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -Wno-orphans -Wno-missing-export-lists -Wno-type-defaults
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -Wno-orphans -Wno-missing-export-lists -Wno-type-defaults -Wno-name-shadowing
   build-depends:
       base >=4.7 && <5
     , gloss
@@ -53,7 +45,7 @@ executable particles-exe
       app
   default-extensions:
       LambdaCase
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -Wno-orphans -Wno-missing-export-lists -Wno-type-defaults -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -Wno-orphans -Wno-missing-export-lists -Wno-type-defaults -Wno-name-shadowing -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
     , gloss
@@ -72,7 +64,7 @@ test-suite particles-test
       test
   default-extensions:
       LambdaCase
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -Wno-orphans -Wno-missing-export-lists -Wno-type-defaults -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -Wno-orphans -Wno-missing-export-lists -Wno-type-defaults -Wno-name-shadowing -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
     , gloss

@@ -6,7 +6,7 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Interact
 
 visualise :: [Particle] -> Float -> IO ()
-visualise ps n = play disp white 60 (WS ps (0,0) False (250,-30) False (250,30) False) toPicture eventHandler changeState
+visualise ps n = play disp (greyN 0.8) 60 (WS ps (0,0) False (250,-30) False (250,30) False) toPicture eventHandler changeState
 	where
 		disp = InWindow "Particles" (1280, 960) (10,10)
 

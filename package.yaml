@@ -1,23 +1,12 @@
 name:                particles
 version:             0.1.0.0
-github:              "githubuser/particles"
 license:             BSD-3-Clause
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2024 Author name here"
+author:              "Robert Mascarenhas"
+maintainer:          "robwmascarenhas@gmail.com"
+copyright:           "2024 Robert Mascarenhas"
 
 extra-source-files:
 - README.md
-- CHANGELOG.md
-
-# Metadata used when publishing your package
-# synopsis:            Short description of your package
-# category:            Web
-
-# To avoid duplicated efforts in documentation and dealing with the
-# complications of embedding Haddock markup inside cabal files, it is
-# common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/particles#readme>
 
 dependencies:
 - base >= 4.7 && < 5
@@ -36,6 +25,7 @@ ghc-options:
 - -Wno-orphans
 - -Wno-missing-export-lists
 - -Wno-type-defaults
+- -Wno-name-shadowing
 
 language: GHC2021
 
