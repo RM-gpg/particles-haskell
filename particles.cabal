@@ -20,10 +20,6 @@ library
       Simulation
       Types
       Visualiser
-  other-modules:
-      Paths_particles
-  autogen-modules:
-      Paths_particles
   hs-source-dirs:
       src
   default-extensions:
@@ -35,12 +31,8 @@ library
     , tardis
   default-language: GHC2021
 
-executable particles-exe
+executable particles
   main-is: Main.hs
-  other-modules:
-      Paths_particles
-  autogen-modules:
-      Paths_particles
   hs-source-dirs:
       app
   default-extensions:

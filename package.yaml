@@ -33,17 +33,18 @@ default-extensions: LambdaCase
 
 library:
   source-dirs: src
+  other-modules: []
 
-executables:
-  particles-exe:
-    main:                Main.hs
-    source-dirs:         app
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - particles
+executable:
+  main:                Main.hs
+  source-dirs:         app
+  ghc-options:
+  - -threaded
+  - -rtsopts
+  - -with-rtsopts=-N
+  dependencies:
+  - particles
+  other-modules: []
 
 tests:
   particles-test:
