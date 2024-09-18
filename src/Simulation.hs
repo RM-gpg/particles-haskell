@@ -1,4 +1,4 @@
-module Simulation where
+module Simulation (advanceWorld) where
 
 import Types
 import Control.Monad.Tardis
@@ -11,7 +11,7 @@ advanceWorld eWall eParticle t ps = advanceWorld' t ps 0
 	advanceWorld' t ps 100 = adjustOverlapping eParticle (map (moveParticle t . zeroVel) ps) []
 	advanceWorld' t ps n = advanceWorld' (t-bw) (map zeroVel ps') (n+1)
 		where
-			(ps',(bw,_)) = runTardis (adjustParticles eWall eParticle ps) (t,(t,0))
+			(ps',(bw,_)) = runTardis (adjustParticles eWall eParticle ps) (undefined,(t,0))
 
 
 {- Sets the x,y velocities of a particle to 0 if they are below a threshold. -}
@@ -52,14 +52,16 @@ overlapping e p1@(Particle _ r1 (px1,py1) (vx1,vy1) _) p2@(Particle _ r2 (px2,py
 {- Computes the next state following the immediate collision of one or two particles if there
  is one in the specified time. -}
 adjustParticles :: Float -> Float -> [Particle] -> Tardis Float (Float,Int) [Particle]
-adjustParticles _  _ [] = pure []
+adjustParticles _ _ [] = do
+	(t,_) <- getPast
+	sendPast t
+	pure []
 adjustParticles eWall eParticle (x:xs) = do
 	bw <- getFuture
 	(t,n) <- getPast
-	let (l,(ctime,_)) = runTardis (replace eParticle x xs) (t,(t,0))
+	let (l,(ctime,_)) = runTardis (replace eParticle x xs) (undefined,(t,0))
 	let (ctimeWall,dir) = collisionTimeWall x
 	modifyForwards (\(t,n) -> (minimum [t,ctime,ctimeWall], if ctime == bw || ctimeWall == bw then n+1 else n))
-	modifyBackwards (\bw -> minimum [bw,t,ctime,ctimeWall])
 	rest <- adjustParticles eWall eParticle xs
 	pure $ if ctime == bw && n == 0 then l
 		else if ctimeWall == bw && n == 0 then collideWall eWall (ctimeWall,dir) x:rest
@@ -70,17 +72,16 @@ adjustParticles eWall eParticle (x:xs) = do
 replace :: Float -> Particle -> [Particle] -> Tardis Float (Float,Int) [Particle]
 replace _ p [] = do
 	(t,n) <- getPast
+	sendPast t
 	pure [moveParticle t p | n == 0]
 replace e p (x:xs) = case collisionTime p x of
 	Nothing -> do
 		bw <- getFuture
-		(t,_) <- getPast
-		(moveParticle (min bw t) x:) <$> replace e p xs
+		(moveParticle bw x:) <$> replace e p xs
 	Just ctime -> do
 		bw <- getFuture
-		(t,n) <- getPast
+		(_,n) <- getPast
 		modifyForwards (\(t,n) -> (min t ctime, if ctime == bw then n+1 else n))
-		modifyBackwards (\bw -> minimum [bw,t,ctime])
 		rest <- replace e p xs
 		pure $ if ctime == bw && n == 0 then p1 : p2 : rest else moveParticle bw x : rest
 			where
@@ -172,4 +173,4 @@ collide e t p1@(Particle m1 r1 (px1,py1) (vx1,vy1) _) p2@(Particle m2 r2 (px2,py
 
 {- Limits the absolute value of a Float. -}
 limiter :: Float -> Float -> Float
-limiter lim x = if abs x > lim then signum x * lim else x
+limiter lim x = max (-lim) $ min lim x

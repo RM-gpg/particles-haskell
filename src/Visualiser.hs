@@ -1,7 +1,7 @@
 module Visualiser where
 
 import Types
-import Simulation ( advanceWorld )
+import Simulation
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Interact
 
